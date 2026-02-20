@@ -1,6 +1,19 @@
 const editor = document.getElementById('editor');
 const background = document.getElementById('notes-background');
 
+// ── SAVE TO LOCALSTORAGE ──
+function saveToStorage() {
+  const notes = [];
+  document.querySelectorAll('.published-note').forEach(note => {
+    notes.push({
+      html: note.querySelector('.retro-content').innerHTML,
+      left: note.style.left,
+      top: note.style.top
+    });
+  });
+  localStorage.setItem('saved-notes', JSON.stringify(notes));
+}
+
 // ── Clear placeholder on first click ──
 editor.addEventListener('focus', () => {
   if (editor.innerText.trim() === 'Start typing here...') {
@@ -13,14 +26,15 @@ document.getElementById('font-size-picker').addEventListener('change', (e) => {
   editor.style.fontSize = e.target.value;
 });
 
-// ── Helper: create a todo item ──
+// ── CREATE TODO ITEM ──
 function createTodoItem(textContent = '') {
   const div = document.createElement('div');
   div.className = 'todo-item';
-  div.setAttribute('data-type', 'todo');
+  div.setAttribute('contenteditable', 'false');
 
   const box = document.createElement('span');
   box.className = 'todo-checkbox';
+  box.setAttribute('contenteditable', 'false');
   box.addEventListener('click', () => {
     const isDone = box.getAttribute('data-done') === 'true';
     box.setAttribute('data-done', !isDone);
@@ -29,7 +43,7 @@ function createTodoItem(textContent = '') {
 
   const text = document.createElement('span');
   text.className = 'todo-text';
-  text.contentEditable = 'true';
+  text.setAttribute('contenteditable', 'true');
   if (textContent) text.textContent = textContent;
 
   text.addEventListener('keydown', (e) => {
@@ -55,18 +69,19 @@ function createTodoItem(textContent = '') {
   return div;
 }
 
-// ── Helper: create a bullet item ──
+// ── CREATE BULLET ITEM ──
 function createBulletItem(textContent = '') {
   const div = document.createElement('div');
   div.className = 'bullet-item';
-  div.setAttribute('data-type', 'bullet');
+  div.setAttribute('contenteditable', 'false');
 
   const dot = document.createElement('span');
   dot.className = 'bullet-dot';
+  dot.setAttribute('contenteditable', 'false');
 
   const text = document.createElement('span');
   text.className = 'bullet-text';
-  text.contentEditable = 'true';
+  text.setAttribute('contenteditable', 'true');
   if (textContent) text.textContent = textContent;
 
   text.addEventListener('keydown', (e) => {
@@ -106,7 +121,7 @@ document.getElementById('btn-bullet').addEventListener('click', () => {
   bullet.querySelector('.bullet-text').focus();
 });
 
-// ── Helper: attach checkbox events ──
+// ── ATTACH CHECKBOX EVENTS ──
 function attachCheckboxEvents(container) {
   container.querySelectorAll('.todo-checkbox').forEach(box => {
     box.addEventListener('click', () => {
@@ -117,11 +132,10 @@ function attachCheckboxEvents(container) {
   });
 }
 
-// ── Helper: make note editable ──
+// ── MAKE NOTE EDITABLE ──
 function makeEditable(note) {
   const noteContent = note.querySelector('.retro-content');
   const titlebar = note.querySelector('.retro-titlebar');
-  const title = note.querySelector('.retro-title');
 
   note.classList.add('editing');
   note.style.cursor = 'default';
@@ -129,18 +143,11 @@ function makeEditable(note) {
   noteContent.style.outline = 'none';
   noteContent.focus();
 
-  // Change edit button to done indicator
-  const editBtn = note.querySelector('.edit-btn');
-  if (editBtn) editBtn.textContent = '✎';
-
-  // Show save button
   note.querySelector('.note-save-btn').style.display = 'block';
-
-  // Disable dragging while editing
   titlebar.onmousedown = null;
 }
 
-// ── Helper: save note edits ──
+// ── SAVE NOTE EDITS ──
 function saveNote(note) {
   const noteContent = note.querySelector('.retro-content');
   const titlebar = note.querySelector('.retro-titlebar');
@@ -148,30 +155,17 @@ function saveNote(note) {
   note.classList.remove('editing');
   note.style.cursor = 'grab';
   noteContent.contentEditable = 'false';
-
-  // Change edit button back
-  const editBtn = note.querySelector('.edit-btn');
-  if (editBtn) editBtn.textContent = '✎';
-
-  // Hide save button
   note.querySelector('.note-save-btn').style.display = 'none';
 
-  // Re-attach checkbox events after editing
   attachCheckboxEvents(noteContent);
-
-  // Re-enable dragging
   makeDraggable(note, titlebar);
 }
 
-// ── PUBLISH BUTTON ──
-document.getElementById('btn-publish').addEventListener('click', () => {
-  const content = editor.innerHTML.trim();
-  if (!content || content === '<p></p>' || content === '<p><br></p>') return;
-
+// ── BUILD A NOTE ──
+function buildNote(content) {
   const note = document.createElement('div');
   note.className = 'published-note retro-window';
 
-  // Title bar with edit and close buttons
   const titlebar = document.createElement('div');
   titlebar.className = 'retro-titlebar';
 
@@ -185,11 +179,11 @@ document.getElementById('btn-publish').addEventListener('click', () => {
   const editBtn = document.createElement('span');
   editBtn.className = 'edit-btn';
   editBtn.textContent = '✎';
-  editBtn.title = 'Edit note';
   editBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (note.classList.contains('editing')) {
       saveNote(note);
+      saveToStorage();
     } else {
       makeEditable(note);
     }
@@ -198,45 +192,54 @@ document.getElementById('btn-publish').addEventListener('click', () => {
   const closeBtn = document.createElement('span');
   closeBtn.className = 'close-btn';
   closeBtn.textContent = '✕';
-  closeBtn.addEventListener('click', () => note.remove());
+  closeBtn.addEventListener('click', () => {
+    note.remove();
+    saveToStorage();
+  });
 
   controls.appendChild(editBtn);
   controls.appendChild(closeBtn);
   titlebar.appendChild(titleSpan);
   titlebar.appendChild(controls);
 
-  // Note content
   const noteContent = document.createElement('div');
   noteContent.className = 'retro-content';
   noteContent.contentEditable = 'false';
   noteContent.innerHTML = content;
 
-  // Save button (hidden by default)
   const saveBtn = document.createElement('button');
   saveBtn.className = 'note-save-btn';
   saveBtn.textContent = 'Save ✦';
   saveBtn.style.display = 'none';
-  saveBtn.addEventListener('click', () => saveNote(note));
+  saveBtn.addEventListener('click', () => {
+    saveNote(note);
+    saveToStorage();
+  });
 
   note.appendChild(titlebar);
   note.appendChild(noteContent);
   note.appendChild(saveBtn);
 
-  // Attach checkbox events
   attachCheckboxEvents(noteContent);
+  return note;
+}
 
-  // Random position
+// ── PUBLISH BUTTON ──
+document.getElementById('btn-publish').addEventListener('click', () => {
+  const content = editor.innerHTML.trim();
+  if (!content || content === '<p></p>' || content === '<p><br></p>') return;
+
+  const note = buildNote(content);
+
   const bgW = background.clientWidth;
   const bgH = background.clientHeight;
-  const x = Math.random() * (bgW - 260);
-  const y = Math.random() * (bgH - 220);
-  note.style.left = x + 'px';
-  note.style.top  = y + 'px';
+  note.style.left = Math.random() * (bgW - 260) + 'px';
+  note.style.top  = Math.random() * (bgH - 220) + 'px';
 
   background.appendChild(note);
-  makeDraggable(note, titlebar);
+  makeDraggable(note, note.querySelector('.retro-titlebar'));
+  saveToStorage();
 
-  // Clear editor
   editor.innerHTML = '<p></p>';
   editor.focus();
 });
@@ -246,9 +249,7 @@ function makeDraggable(el, handle) {
   let startX, startY, startL, startT;
 
   handle.onmousedown = (e) => {
-    // Don't drag if clicking a control button
     if (e.target.closest('.retro-controls')) return;
-    // Don't drag if note is being edited
     if (el.classList.contains('editing')) return;
 
     startX = e.clientX;
@@ -266,9 +267,23 @@ function makeDraggable(el, handle) {
       el.style.cursor = 'grab';
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
+      saveToStorage();
     }
 
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
   };
 }
+
+// ── LOAD SAVED NOTES ON STARTUP ──
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('saved-notes');
+  if (!saved) return;
+  JSON.parse(saved).forEach(data => {
+    const note = buildNote(data.html);
+    note.style.left = data.left;
+    note.style.top = data.top;
+    background.appendChild(note);
+    makeDraggable(note, note.querySelector('.retro-titlebar'));
+  });
+});
