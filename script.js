@@ -1,159 +1,258 @@
-const editor = document.getElementById('editor');
-const background = document.getElementById('notes-background');
+@font-face {
+  font-family: 'CrayonHandRegular2016Demo';
+  src: url('fonts/CrayonHandRegular2016Demo.ttf') format('truetype');
+}
 
-// ── Clear placeholder on first click ──
-editor.addEventListener('focus', () => {
-  if (editor.innerText.trim() === 'Start typing here...') {
-    editor.innerHTML = '<p></p>';
-  }
-});
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-// ── FONT SIZE PICKER ──
-document.getElementById('font-size-picker').addEventListener('change', (e) => {
-  editor.style.fontSize = e.target.value;
-});
+body {
+  background: #ECE6D4;
+  color: #9D9D8C;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
-// ── STRIKETHROUGH BUTTON ──
-document.getElementById('btn-strikethrough').addEventListener('click', () => {
-  const sel = window.getSelection();
-  if (!sel.rangeCount || sel.isCollapsed) return;
-  const range = sel.getRangeAt(0);
-  const span = document.createElement('span');
-  span.className = 'strikethrough';
-  range.surroundContents(span);
-});
+/* ── BACKGROUND ── */
+#notes-background {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #ECE6D4;
+}
 
-// ── TO-DO BUTTON ──
-document.getElementById('btn-todo').addEventListener('click', () => {
-  const div = document.createElement('div');
-  div.className = 'todo-item';
+/* ── EDITOR PANEL ── */
+#editor-panel {
+  background: #ECE6D4;
+  border-top: 1.5px solid #9D9D8C;
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+}
 
-  const box = document.createElement('span');
-  box.className = 'todo-checkbox';
-  box.textContent = '';
-  box.addEventListener('click', () => {
-    box.classList.toggle('done');
-    box.textContent = box.classList.contains('done') ? '★' : '';
-  });
+/* ── TOOLBAR ── */
+#toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 
-  const text = document.createElement('span');
-  text.contentEditable = 'true';
-  text.textContent = 'Task...';
-  text.style.outline = 'none';
-  text.style.flex = '1';
-  text.style.fontFamily = "'CrayonHandRegular2016Demo', monospace";
+#toolbar button {
+  background: #ECE6D4;
+  color: #9D9D8C;
+  border: 1.5px solid #9D9D8C;
+  padding: 4px 12px;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
 
-  div.appendChild(box);
-  div.appendChild(text);
+#toolbar button:hover {
+  background: #9D9D8C;
+  color: #ECE6D4;
+}
 
-  const sel = window.getSelection();
-  if (sel.rangeCount) {
-    const range = sel.getRangeAt(0);
-    range.collapse(false);
-    range.insertNode(div);
-    range.setStartAfter(div);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  } else {
-    editor.appendChild(div);
-  }
+#btn-publish {
+  margin-left: auto;
+  background: #9D9D8C;
+  color: #ECE6D4;
+  font-weight: bold;
+  border: 1.5px solid #9D9D8C;
+}
 
-  text.focus();
-});
+#btn-publish:hover {
+  background: #ECE6D4;
+  color: #9D9D8C;
+}
 
-// ── BULLET BUTTON ──
-document.getElementById('btn-bullet').addEventListener('click', () => {
-  const p = document.createElement('p');
-  p.textContent = '• ';
-  p.contentEditable = 'true';
+/* ── FONT SIZE PICKER ── */
+#font-size-picker {
+  background: #ECE6D4;
+  color: #9D9D8C;
+  border: 1.5px solid #9D9D8C;
+  padding: 4px 8px;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: 15px;
+  cursor: pointer;
+  outline: none;
+}
 
-  const sel = window.getSelection();
-  if (sel.rangeCount) {
-    const range = sel.getRangeAt(0);
-    range.collapse(false);
-    range.insertNode(p);
-    range.setStartAfter(p);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  } else {
-    editor.appendChild(p);
-  }
-  p.focus();
-});
+#font-size-picker:hover {
+  background: #9D9D8C;
+  color: #ECE6D4;
+}
 
-// ── PUBLISH BUTTON ──
-document.getElementById('btn-publish').addEventListener('click', () => {
-  const content = editor.innerHTML.trim();
-  if (!content || content === '<p></p>') return;
+#font-size-picker option {
+  background: #ECE6D4;
+  color: #9D9D8C;
+}
 
-  const note = document.createElement('div');
-  note.className = 'published-note retro-window';
+/* ── RETRO WINDOW BOX ── */
+.retro-window {
+  border: 1.5px solid #9D9D8C;
+  width: 100%;
+  max-width: 520px;
+  align-self: center;
+  background: #ECE6D4;
+  color: #9D9D8C;
+}
 
-  const titlebar = document.createElement('div');
-  titlebar.className = 'retro-titlebar';
-  titlebar.innerHTML = `
-    <span class="retro-title">note</span>
-    <div class="retro-controls">
-      <span onclick="this.closest('.published-note').remove()">✕</span>
-    </div>
-  `;
+.retro-titlebar {
+  background: #9D9D8C;
+  border-bottom: 1.5px solid #9D9D8C;
+  padding: 3px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #ECE6D4;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+}
 
-  const noteContent = document.createElement('div');
-  noteContent.className = 'retro-content';
-  noteContent.innerHTML = content;
+.retro-controls {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+}
 
-  // Re-attach checkbox click events for published todo items
-  noteContent.querySelectorAll('.todo-checkbox').forEach(box => {
-    box.addEventListener('click', () => {
-      box.classList.toggle('done');
-      box.textContent = box.classList.contains('done') ? '★' : '';
-    });
-  });
+.retro-controls span {
+  border: 1px solid #ECE6D4;
+  padding: 0 5px;
+  cursor: pointer;
+  background: #9D9D8C;
+  color: #ECE6D4;
+}
 
-  note.appendChild(titlebar);
-  note.appendChild(noteContent);
+.retro-content {
+  padding: 10px 12px;
+  min-height: 120px;
+  max-height: 220px;
+  overflow-y: auto;
+}
 
-  // Random position on background
-  const bgW = background.clientWidth;
-  const bgH = background.clientHeight;
-  const x = Math.random() * (bgW - 240);
-  const y = Math.random() * (bgH - 200);
-  note.style.left = x + 'px';
-  note.style.top  = y + 'px';
+#editor {
+  outline: none;
+  min-height: 100px;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #9D9D8C;
+}
 
-  background.appendChild(note);
+#editor p {
+  margin: 2px 0;
+}
 
-  // Make it draggable
-  makeDraggable(note, titlebar);
+/* ── TO-DO ITEM ── */
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 3px 0;
+  min-height: 28px;
+}
 
-  // Clear editor
-  editor.innerHTML = '<p></p>';
-  editor.focus();
-});
+.todo-checkbox {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border: 1.5px solid #9D9D8C;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 13px;
+  line-height: 1;
+  user-select: none;
+  color: #9D9D8C;
+}
 
-// ── DRAGGABLE notes ──
-function makeDraggable(el, handle) {
-  let startX, startY, startL, startT;
+.todo-text {
+  outline: none;
+  flex: 1;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: inherit;
+  color: #9D9D8C;
+  min-width: 0;
+  word-break: break-word;
+}
 
-  handle.addEventListener('mousedown', e => {
-    startX = e.clientX;
-    startY = e.clientY;
-    startL = parseInt(el.style.left) || 0;
-    startT = parseInt(el.style.top)  || 0;
-    el.style.cursor = 'grabbing';
+/* ── BULLET ITEM ── */
+.bullet-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 3px 0;
+  min-height: 28px;
+}
 
-    function onMove(e) {
-      el.style.left = (startL + e.clientX - startX) + 'px';
-      el.style.top  = (startT + e.clientY - startY) + 'px';
-    }
+.bullet-dot {
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  background: #9D9D8C;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
-    function onUp() {
-      el.style.cursor = 'grab';
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-    }
+.bullet-text {
+  outline: none;
+  flex: 1;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: inherit;
+  color: #9D9D8C;
+  min-width: 0;
+  word-break: break-word;
+}
 
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  });
+/* ── PUBLISHED NOTES ── */
+.published-note {
+  position: absolute;
+  width: 220px;
+  background: #ECE6D4;
+  color: #9D9D8C;
+  border: 1.5px solid #9D9D8C;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: 13px;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 3px 3px 0px #9D9D8C;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.published-note .retro-titlebar {
+  background: #9D9D8C;
+  cursor: grab;
+  color: #ECE6D4;
+}
+
+.published-note .retro-content {
+  padding: 8px 10px;
+  max-height: 180px;
+  overflow: hidden;
+}
+
+.published-note .todo-checkbox {
+  border-color: #9D9D8C;
+  color: #9D9D8C;
+}
+
+.published-note .bullet-dot {
+  background: #9D9D8C;
 }
