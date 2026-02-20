@@ -10,31 +10,40 @@
 
 body {
   background: #ECE6D4;
-  color: #000000;
+  color: #9D9D8C;
   font-family: 'Times New Roman', serif;
   height: 100vh;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 /* ── BACKGROUND ── */
 #notes-background {
-  flex: 1;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   background: #ECE6D4;
+  z-index: 0;
 }
 
 /* ── EDITOR PANEL ── */
 #editor-panel {
   background: #ECE6D4;
-  border-top: 1.5px solid #9D9D8C;
+  border: 1.5px solid #9D9D8C;
   padding: 12px 16px 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   z-index: 10;
+  position: relative;
+  width: 580px;
+  box-shadow: 4px 4px 0px #9D9D8C;
 }
 
 /* ── TOOLBAR ── */
@@ -305,4 +314,5 @@ body {
 .published-note.editing .note-save-btn {
   display: block;
 }
+
 
