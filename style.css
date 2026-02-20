@@ -1,213 +1,190 @@
-@font-face {
-  font-family: 'CrayonHandRegular2016Demo';
-  src: url('fonts/CrayonHandRegular2016Demo.ttf') format('truetype');
+const editor = document.getElementById('editor');
+const background = document.getElementById('notes-background');
+
+// ── Clear placeholder on first click ──
+editor.addEventListener('focus', () => {
+  if (editor.innerText.trim() === 'Start typing here...') {
+    editor.innerHTML = '<p></p>';
+  }
+});
+
+// ── FONT SIZE PICKER ──
+document.getElementById('font-size-picker').addEventListener('change', (e) => {
+  editor.style.fontSize = e.target.value;
+});
+
+// ── Helper: create a todo item ──
+function createTodoItem() {
+  const div = document.createElement('div');
+  div.className = 'todo-item';
+  div.setAttribute('data-type', 'todo');
+
+  const box = document.createElement('span');
+  box.className = 'todo-checkbox';
+  box.addEventListener('click', () => {
+    const isDone = box.getAttribute('data-done') === 'true';
+    box.setAttribute('data-done', !isDone);
+    box.textContent = !isDone ? '★' : '';
+  });
+
+  const text = document.createElement('span');
+  text.className = 'todo-text';
+  text.contentEditable = 'true';
+
+  // Enter key creates a new todo item
+  text.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const newTodo = createTodoItem();
+      div.parentNode.insertBefore(newTodo, div.nextSibling);
+      newTodo.querySelector('.todo-text').focus();
+    }
+    // Backspace on empty text removes the todo item
+    if (e.key === 'Backspace' && text.innerText.trim() === '') {
+      e.preventDefault();
+      const prev = div.previousSibling;
+      div.remove();
+      if (prev) {
+        const prevText = prev.querySelector('.todo-text, .bullet-text');
+        if (prevText) {
+          prevText.focus();
+        }
+      }
+    }
+  });
+
+  div.appendChild(box);
+  div.appendChild(text);
+  return div;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+// ── Helper: create a bullet item ──
+function createBulletItem() {
+  const div = document.createElement('div');
+  div.className = 'bullet-item';
+  div.setAttribute('data-type', 'bullet');
+
+  const dot = document.createElement('span');
+  dot.className = 'bullet-dot';
+
+  const text = document.createElement('span');
+  text.className = 'bullet-text';
+  text.contentEditable = 'true';
+
+  // Enter key creates a new bullet item
+  text.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const newBullet = createBulletItem();
+      div.parentNode.insertBefore(newBullet, div.nextSibling);
+      newBullet.querySelector('.bullet-text').focus();
+    }
+    // Backspace on empty text removes the bullet item
+    if (e.key === 'Backspace' && text.innerText.trim() === '') {
+      e.preventDefault();
+      const prev = div.previousSibling;
+      div.remove();
+      if (prev) {
+        const prevText = prev.querySelector('.todo-text, .bullet-text');
+        if (prevText) {
+          prevText.focus();
+        }
+      }
+    }
+  });
+
+  div.appendChild(dot);
+  div.appendChild(text);
+  return div;
 }
 
-body {
-  background: #000;
-  color: #fff;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+// ── TO-DO BUTTON ──
+document.getElementById('btn-todo').addEventListener('click', () => {
+  const todo = createTodoItem();
+  editor.appendChild(todo);
+  todo.querySelector('.todo-text').focus();
+});
 
-/* ── BACKGROUND where published notes float ── */
-#notes-background {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
+// ── BULLET BUTTON ──
+document.getElementById('btn-bullet').addEventListener('click', () => {
+  const bullet = createBulletItem();
+  editor.appendChild(bullet);
+  bullet.querySelector('.bullet-text').focus();
+});
 
-/* ── BOTTOM EDITOR PANEL ── */
-#editor-panel {
-  background: #000;
-  border-top: 1.5px solid #fff;
-  padding: 12px 16px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 10;
-}
+// ── PUBLISH BUTTON ──
+document.getElementById('btn-publish').addEventListener('click', () => {
+  const content = editor.innerHTML.trim();
+  if (!content || content === '<p></p>' || content === '<p><br></p>') return;
 
-/* ── TOOLBAR ── */
-#toolbar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+  const note = document.createElement('div');
+  note.className = 'published-note retro-window';
 
-#toolbar button {
-  background: #000;
-  color: #fff;
-  border: 1.5px solid #fff;
-  padding: 4px 12px;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
+  const titlebar = document.createElement('div');
+  titlebar.className = 'retro-titlebar';
+  titlebar.innerHTML = `
+    <span class="retro-title">note</span>
+    <div class="retro-controls">
+      <span class="close-btn">✕</span>
+    </div>
+  `;
+  titlebar.querySelector('.close-btn').addEventListener('click', () => note.remove());
 
-#toolbar button:hover {
-  background: #fff;
-  color: #000;
-}
+  const noteContent = document.createElement('div');
+  noteContent.className = 'retro-content';
+  noteContent.innerHTML = content;
 
-#btn-publish {
-  margin-left: auto;
-  background: #fff;
-  color: #000;
-  font-weight: bold;
-  border: 1.5px solid #fff;
-}
+  // Re-attach checkbox events on published notes
+  noteContent.querySelectorAll('.todo-checkbox').forEach(box => {
+    box.addEventListener('click', () => {
+      const isDone = box.getAttribute('data-done') === 'true';
+      box.setAttribute('data-done', !isDone);
+      box.textContent = !isDone ? '★' : '';
+    });
+  });
 
-#btn-publish:hover {
-  background: #000;
-  color: #fff;
-}
+  note.appendChild(titlebar);
+  note.appendChild(noteContent);
 
-/* ── FONT SIZE PICKER ── */
-#font-size-picker {
-  background: #000;
-  color: #fff;
-  border: 1.5px solid #fff;
-  padding: 4px 8px;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
-  font-size: 15px;
-  cursor: pointer;
-  outline: none;
-}
+  // Random position
+  const bgW = background.clientWidth;
+  const bgH = background.clientHeight;
+  const x = Math.random() * (bgW - 240);
+  const y = Math.random() * (bgH - 200);
+  note.style.left = x + 'px';
+  note.style.top  = y + 'px';
 
-#font-size-picker:hover {
-  background: #fff;
-  color: #000;
-}
+  background.appendChild(note);
+  makeDraggable(note, titlebar);
 
-#font-size-picker option {
-  background: #000;
-  color: #fff;
-}
+  // Clear editor
+  editor.innerHTML = '<p></p>';
+  editor.focus();
+});
 
-/* ── RETRO WINDOW BOX ── */
-.retro-window {
-  border: 1.5px solid #000;
-  width: 100%;
-  max-width: 520px;
-  align-self: center;
-  background: #fff;
-  color: #000;
-}
+// ── DRAGGABLE ──
+function makeDraggable(el, handle) {
+  let startX, startY, startL, startT;
 
-.retro-titlebar {
-  background: #d4d4d4;
-  border-bottom: 1.5px solid #000;
-  padding: 3px 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  color: #000;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
-}
+  handle.addEventListener('mousedown', e => {
+    startX = e.clientX;
+    startY = e.clientY;
+    startL = parseInt(el.style.left) || 0;
+    startT = parseInt(el.style.top)  || 0;
+    el.style.cursor = 'grabbing';
 
-.retro-controls {
-  display: flex;
-  gap: 6px;
-  font-size: 12px;
-}
+    function onMove(e) {
+      el.style.left = (startL + e.clientX - startX) + 'px';
+      el.style.top  = (startT + e.clientY - startY) + 'px';
+    }
 
-.retro-controls span {
-  border: 1px solid #000;
-  padding: 0 5px;
-  cursor: pointer;
-  background: #e0e0e0;
-}
+    function onUp() {
+      el.style.cursor = 'grab';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
 
-.retro-content {
-  padding: 10px 12px;
-  min-height: 120px;
-  max-height: 220px;
-  overflow-y: auto;
-}
-
-#editor {
-  outline: none;
-  min-height: 100px;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
-  font-size: 16px;
-  line-height: 1.7;
-  color: #000;
-}
-
-#editor p {
-  margin: 2px 0;
-}
-
-/* ── STRIKETHROUGH ── */
-.strikethrough {
-  text-decoration: line-through;
-  opacity: 0.6;
-}
-
-/* ── TO-DO ITEM ── */
-.todo-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 4px 0;
-}
-
-.todo-checkbox {
-  width: 15px;
-  height: 15px;
-  border: 1.5px solid #000;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  font-size: 11px;
-  user-select: none;
-}
-
-.todo-checkbox.done {
-  color: #000;
-}
-
-/* ── PUBLISHED NOTES floating on background ── */
-.published-note {
-  position: absolute;
-  width: 220px;
-  background: #fff;
-  color: #000;
-  border: 1.5px solid #fff;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
-  font-size: 13px;
-  cursor: grab;
-  user-select: none;
-  box-shadow: 2px 2px 0px rgba(255,255,255,0.2);
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-.published-note .retro-titlebar {
-  background: #c8c8c8;
-  cursor: grab;
-}
-
-.published-note .retro-content {
-  padding: 8px 10px;
-  max-height: 180px;
-  overflow: hidden;
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
 }
