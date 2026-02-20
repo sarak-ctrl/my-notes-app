@@ -1,0 +1,213 @@
+@font-face {
+  font-family: 'CrayonHandRegular2016Demo';
+  src: url('fonts/CrayonHandRegular2016Demo.ttf') format('truetype');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── BACKGROUND where published notes float ── */
+#notes-background {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── BOTTOM EDITOR PANEL ── */
+#editor-panel {
+  background: #000;
+  border-top: 1.5px solid #fff;
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+}
+
+/* ── TOOLBAR ── */
+#toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#toolbar button {
+  background: #000;
+  color: #fff;
+  border: 1.5px solid #fff;
+  padding: 4px 12px;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+#toolbar button:hover {
+  background: #fff;
+  color: #000;
+}
+
+#btn-publish {
+  margin-left: auto;
+  background: #fff;
+  color: #000;
+  font-weight: bold;
+  border: 1.5px solid #fff;
+}
+
+#btn-publish:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* ── FONT SIZE PICKER ── */
+#font-size-picker {
+  background: #000;
+  color: #fff;
+  border: 1.5px solid #fff;
+  padding: 4px 8px;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: 15px;
+  cursor: pointer;
+  outline: none;
+}
+
+#font-size-picker:hover {
+  background: #fff;
+  color: #000;
+}
+
+#font-size-picker option {
+  background: #000;
+  color: #fff;
+}
+
+/* ── RETRO WINDOW BOX ── */
+.retro-window {
+  border: 1.5px solid #000;
+  width: 100%;
+  max-width: 520px;
+  align-self: center;
+  background: #fff;
+  color: #000;
+}
+
+.retro-titlebar {
+  background: #d4d4d4;
+  border-bottom: 1.5px solid #000;
+  padding: 3px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #000;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+}
+
+.retro-controls {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.retro-controls span {
+  border: 1px solid #000;
+  padding: 0 5px;
+  cursor: pointer;
+  background: #e0e0e0;
+}
+
+.retro-content {
+  padding: 10px 12px;
+  min-height: 120px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+#editor {
+  outline: none;
+  min-height: 100px;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #000;
+}
+
+#editor p {
+  margin: 2px 0;
+}
+
+/* ── STRIKETHROUGH ── */
+.strikethrough {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* ── TO-DO ITEM ── */
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.todo-checkbox {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid #000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 11px;
+  user-select: none;
+}
+
+.todo-checkbox.done {
+  color: #000;
+}
+
+/* ── PUBLISHED NOTES floating on background ── */
+.published-note {
+  position: absolute;
+  width: 220px;
+  background: #fff;
+  color: #000;
+  border: 1.5px solid #fff;
+  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-size: 13px;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 2px 2px 0px rgba(255,255,255,0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.published-note .retro-titlebar {
+  background: #c8c8c8;
+  cursor: grab;
+}
+
+.published-note .retro-content {
+  padding: 8px 10px;
+  max-height: 180px;
+  overflow: hidden;
+}
