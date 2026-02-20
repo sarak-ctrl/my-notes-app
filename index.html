@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notes & To-Do</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- BACKGROUND CANVAS where published notes appear -->
+  <div id="notes-background"></div>
+
+  <!-- BOTTOM PANEL: the typing/keyboard section -->
+  <div id="editor-panel">
+
+    <div id="toolbar">
+      <button id="btn-strikethrough" title="Strikethrough">S̶</button>
+      <button id="btn-todo" title="Add To-Do item">☐ To-Do</button>
+      <button id="btn-bullet" title="Bullet point">• Bullet</button>
+
+      <select id="font-size-picker" title="Font size">
+        <option value="12px">12</option>
+        <option value="14px">14</option>
+        <option value="16px" selected>16</option>
+        <option value="18px">18</option>
+        <option value="20px">20</option>
+        <option value="24px">24</option>
+        <option value="28px">28</option>
+        <option value="32px">32</option>
+      </select>
+
+      <button id="btn-publish">Publish ✦</button>
+    </div>
+
+    <!-- The retro window box where you type -->
+    <div class="retro-window" id="editor-window">
+      <div class="retro-titlebar">
+        <span class="retro-title">untitled</span>
+        <div class="retro-controls">
+          <span>—</span>
+          <span>□</span>
+          <span>✕</span>
+        </div>
+      </div>
+      <div class="retro-content">
+        <div id="editor" contenteditable="true" spellcheck="false">
+          <p>Start typing here...</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
