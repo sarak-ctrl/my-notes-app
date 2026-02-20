@@ -153,7 +153,7 @@ body {
   font-family: 'Times New Roman', serif;
   font-size: 16px;
   line-height: 1.7;
-  color: #9D9D8C;
+  color: #000000;
 }
 
 #editor p {
@@ -191,7 +191,7 @@ body {
   flex: 1;
   font-family: 'Times New Roman', serif;
   font-size: inherit;
-  color: #9D9D8C;
+  color: #000000;
   min-width: 0;
   word-break: break-word;
 }
@@ -219,7 +219,7 @@ body {
   flex: 1;
   font-family: 'Times New Roman', serif;
   font-size: inherit;
-  color: #9D9D8C;
+  color: #000000;
   min-width: 0;
   word-break: break-word;
 }
@@ -229,7 +229,7 @@ body {
   position: absolute;
   width: 240px;
   background: #ECE6D4;
-  color: #9D9D8C;
+  color: #000000;
   border: 1.5px solid #9D9D8C;
   font-family: 'Times New Roman', serif;
   font-size: 13px;
@@ -314,5 +314,6 @@ body {
 .published-note.editing .note-save-btn {
   display: block;
 }
+
 
 
