@@ -1,6 +1,5 @@
 @font-face {
-  font-family: 'CrayonHandRegular2016Demo';
-  src: url('fonts/CrayonHandRegular2016Demo.ttf') format('truetype');
+  font-family: 'Times New Roman', serif;
 }
 
 * {
@@ -11,8 +10,8 @@
 
 body {
   background: #ECE6D4;
-  color: #9D9D8C;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
+  color: #000000;
+  font-family: 'Times New Roman', serif;
   height: 100vh;
   overflow: hidden;
   display: flex;
@@ -50,7 +49,7 @@ body {
   color: #9D9D8C;
   border: 1.5px solid #9D9D8C;
   padding: 4px 12px;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-family: 'Times New Roman', serif;
   font-size: 15px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
@@ -80,7 +79,7 @@ body {
   color: #9D9D8C;
   border: 1.5px solid #9D9D8C;
   padding: 4px 8px;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-family: 'Times New Roman', serif;
   font-size: 15px;
   cursor: pointer;
   outline: none;
@@ -115,7 +114,7 @@ body {
   align-items: center;
   font-size: 14px;
   color: #ECE6D4;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-family: 'Times New Roman', serif;
 }
 
 .retro-controls {
@@ -142,7 +141,7 @@ body {
 #editor {
   outline: none;
   min-height: 100px;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-family: 'Times New Roman', serif;
   font-size: 16px;
   line-height: 1.7;
   color: #9D9D8C;
@@ -181,7 +180,7 @@ body {
 .todo-text {
   outline: none;
   flex: 1;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-family: 'Times New Roman', serif;
   font-size: inherit;
   color: #9D9D8C;
   min-width: 0;
@@ -209,7 +208,7 @@ body {
 .bullet-text {
   outline: none;
   flex: 1;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-family: 'Times New Roman', serif;
   font-size: inherit;
   color: #9D9D8C;
   min-width: 0;
@@ -223,7 +222,7 @@ body {
   background: #ECE6D4;
   color: #9D9D8C;
   border: 1.5px solid #9D9D8C;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-family: 'Times New Roman', serif;
   font-size: 13px;
   cursor: grab;
   user-select: none;
@@ -290,7 +289,7 @@ body {
   background: #9D9D8C;
   color: #ECE6D4;
   border: none;
-  font-family: 'CrayonHandRegular2016Demo', monospace;
+  font-family: 'Times New Roman', serif;
   font-size: 13px;
   cursor: pointer;
   text-align: center;
@@ -306,3 +305,4 @@ body {
 .published-note.editing .note-save-btn {
   display: block;
 }
+
