@@ -71,8 +71,8 @@ body {
 
 #btn-publish {
   margin-left: auto;
-  background: #9D9D8C;
-  color: #ECE6D4;
+  background: #ECE6D4;
+  color: #9D9D8C;
   font-weight: bold;
   border: 1.5px solid #9D9D8C;
 }
@@ -314,6 +314,7 @@ body {
 .published-note.editing .note-save-btn {
   display: block;
 }
+
 
 
 
